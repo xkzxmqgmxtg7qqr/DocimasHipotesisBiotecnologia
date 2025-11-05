@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas de Hipótesis - Biotecnología UTEM</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bio-color: #16a085;
+            --bio-dark: #0e6b5d;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #bdc3c7;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #16a085 0%, #0e6b5d 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 30px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .header-logos img {
+            height: 80px;
+            margin: 0 15px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .institucion {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .departamento {
+            font-size: 0.95em;
+            opacity: 0.85;
+        }
+        
+        .powered-badge {
+            display: inline-block;
+            background: white;
+            color: var(--bio-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 25px;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .tab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .tab-button.active {
+            background: var(--bio-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: var(--bio-color);
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-bottom: 3px solid var(--bio-color);
+            padding-bottom: 10px;
+        }
+        
+        .card h3 {
+            color: var(--bio-dark);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .formula-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--bio-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .example-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid var(--warning-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .calculator-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--bio-dark);
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--bio-color);
+        }
+        
+        .btn {
+            background: var(--bio-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            background: var(--bio-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .result-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid var(--bio-color);
+        }
+        
+        .result-box h3 {
+            color: var(--bio-color);
+            margin-bottom: 15px;
+        }
+        
+        .result-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-item strong {
+            color: var(--bio-dark);
+        }
+        
+        .hypothesis-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .hypothesis-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+        }
+        
+        .hypothesis-box.h0 {
+            border-color: var(--bio-color);
+        }
+        
+        .hypothesis-box.h1 {
+            border-color: var(--accent-color);
+        }
+        
+        .conclusion {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        
+        .conclusion.reject {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background: var(--bio-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .chart-container {
+            margin: 30px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .hypothesis-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-logos">
+                <img src="logo_utem.png" alt="Logo UTEM">
+            </div>
+            <h1>🧪 Pruebas de Hipótesis</h1>
+            <p>Una y Dos Poblaciones - Ingeniería en Biotecnología</p>
+            <p class="institucion">Universidad Tecnológica Metropolitana</p>
+            <p class="departamento">Departamento de Estadística y Econometría</p>
+            <div class="powered-badge">Powered by R & Python</div>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'introduccion')">📚 Introducción</button>
+            <button class="tab-button" onclick="openTab(event, 'conceptos')">🔬 Conceptos</button>
+            <button class="tab-button" onclick="openTab(event, 'una-poblacion')">📊 Una Población</button>
+            <button class="tab-button" onclick="openTab(event, 'dos-poblaciones')">📈 Dos Poblaciones</button>
+            <button class="tab-button" onclick="openTab(event, 'calculadora')">🧮 Calculadora</button>
+            <button class="tab-button" onclick="openTab(event, 'ejemplos-bio')">🧬 Ejemplos Bio</button>
+            <button class="tab-button" onclick="openTab(event, 'codigo-r')">📘 Código R</button>
+            <button class="tab-button" onclick="openTab(event, 'codigo-python')">🐍 Código Python</button>
+        </div>
+        
+        <!-- Tab: Introducción -->
+        <div id="introduccion" class="tab-content active">
+            <div class="card">
+                <h2>📚 Introducción a Pruebas de Hipótesis</h2>
+                
+                <h3>¿Qué es una Prueba de Hipótesis?</h3>
+                <p>Una <strong>prueba de hipótesis</strong> es un procedimiento estadístico que permite tomar decisiones sobre una población basándose en información de una muestra. En Biotecnología, es fundamental para:</p>
+                
+                <ul style="margin: 20px 0; padding-left: 40px;">
+                    <li>Evaluar la efectividad de nuevos tratamientos o fármacos</li>
+                    <li>Comparar rendimientos de diferentes cultivos celulares</li>
+                    <li>Determinar diferencias en concentraciones de proteínas</li>
+                    <li>Validar procesos de producción biotecnológica</li>
+                    <li>Analizar resultados de experimentos genéticos</li>
+                </ul>
+                
+                <h3>Estructura de una Prueba de Hipótesis</h3>
+                
+                <div class="hypothesis-container">
+                    <div class="hypothesis-box h0">
+                        <h4 style="color: var(--bio-color); margin-bottom: 10px;">Hipótesis Nula (H₀)</h4>
+                        <p>Es la afirmación que se quiere contrastar. Generalmente establece que <strong>no hay efecto</strong> o <strong>no hay diferencia</strong>.</p>
+                        <div class="formula-box" style="margin-top: 15px;">
+                            Ejemplo: \(H_0: \mu = \mu_0\)
+                        </div>
+                    </div>
+                    
+                    <div class="hypothesis-box h1">
+                        <h4 style="color: var(--accent-color); margin-bottom: 10px;">Hipótesis Alternativa (H₁ o Hₐ)</h4>
+                        <p>Es la afirmación que queremos probar. Establece que <strong>hay efecto</strong> o <strong>hay diferencia</strong>.</p>
+                        <div class="formula-box" style="margin-top: 15px;">
+                            Ejemplo: \(H_1: \mu \neq \mu_0\)
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Tipos de Pruebas</h3>
+                
+                <table>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Hipótesis Alternativa</th>
+                        <th>Cuándo usar</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Bilateral</strong></td>
+                        <td>\(H_1: \mu \neq \mu_0\)</td>
+                        <td>Cuando nos interesa detectar cualquier diferencia</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unilateral Derecha</strong></td>
+                        <td>\(H_1: \mu > \mu_0\)</td>
+                        <td>Cuando esperamos un incremento</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unilateral Izquierda</strong></td>
+                        <td>\(H_1: \mu < \mu_0\)</td>
+                        <td>Cuando esperamos una disminución</td>
+                    </tr>
+                </table>
+                
+                <h3>Pasos de una Prueba de Hipótesis</h3>
+                
+                <div class="example-box">
+                    <ol style="padding-left: 20px;">
+                        <li><strong>Plantear hipótesis:</strong> Definir H₀ y H₁</li>
+                        <li><strong>Elegir nivel de significancia:</strong> α (usualmente 0.05 o 0.01)</li>
+                        <li><strong>Calcular estadístico de prueba:</strong> z, t, χ², F, etc.</li>
+                        <li><strong>Determinar valor p o región crítica</strong></li>
+                        <li><strong>Tomar decisión:</strong> Rechazar o no rechazar H₀</li>
+                        <li><strong>Interpretar resultados:</strong> En el contexto del problema</li>
+                    </ol>
+                </div>
+                
+                <h3>Aplicaciones en Biotecnología</h3>
+                
+                <div class="warning-box">
+                    <h4>Ejemplos Prácticos:</h4>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>🧬 <strong>Genética:</strong> ¿Hay diferencia en la expresión génica entre dos grupos?</li>
+                        <li>💊 <strong>Farmacología:</strong> ¿El nuevo fármaco es más efectivo que el placebo?</li>
+                        <li>🦠 <strong>Microbiología:</strong> ¿El medio de cultivo aumenta el crecimiento bacteriano?</li>
+                        <li>🌱 <strong>Biotecnología Vegetal:</strong> ¿El tratamiento mejora el rendimiento del cultivo?</li>
+                        <li>🔬 <strong>Bioquímica:</strong> ¿Las concentraciones de proteína difieren entre tratamientos?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Conceptos -->
+        <div id="conceptos" class="tab-content">
+            <div class="card">
+                <h2>🔬 Conceptos Fundamentales</h2>
+                
+                <h3>1. Nivel de Significancia (α)</h3>
+                <p>Es la <strong>probabilidad de rechazar H₀ cuando es verdadera</strong> (Error Tipo I).</p>
+                
+                <div class="formula-box">
+                    \[\alpha = P(\text{Rechazar } H_0 \mid H_0 \text{ es verdadera})\]
+                    <p style="margin-top: 10px;"><strong>Valores comunes:</strong> α = 0.05 (5%) o α = 0.01 (1%)</p>
+                </div>
+                
+                <h3>2. Valor p (p-value)</h3>
+                <p>Es la <strong>probabilidad de observar un resultado tan extremo o más extremo que el observado</strong>, asumiendo que H₀ es verdadera.</p>
+                
+                <div class="example-box">
+                    <h4>Regla de decisión:</h4>
+                    <ul style="padding-left: 20px;">
+                        <li>Si <strong>p-value ≤ α</strong> → Rechazamos H₀ (evidencia significativa)</li>
+                        <li>Si <strong>p-value > α</strong> → No rechazamos H₀ (sin evidencia suficiente)</li>
+                    </ul>
+                </div>
+                
+                <h3>3. Tipos de Errores</h3>
+                
+                <table>
+                    <tr>
+                        <th>Error</th>
+                        <th>Descripción</th>
+                        <th>Probabilidad</th>
+                        <th>Consecuencia</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipo I</strong></td>
+                        <td>Rechazar H₀ cuando es verdadera</td>
+                        <td>α</td>
+                        <td>Falso Positivo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipo II</strong></td>
+                        <td>No rechazar H₀ cuando es falsa</td>
+                        <td>β</td>
+                        <td>Falso Negativo</td>
+                    </tr>
+                </table>
+                
+                <div class="warning-box">
+                    <h4>Ejemplo en Biotecnología:</h4>
+                    <p><strong>Error Tipo I:</strong> Concluir que un nuevo fármaco es efectivo cuando en realidad no lo es.</p>
+                    <p><strong>Error Tipo II:</strong> Concluir que un fármaco no es efectivo cuando en realidad sí lo es.</p>
+                </div>
+                
+                <h3>4. Potencia de la Prueba</h3>
+                <p>Es la probabilidad de <strong>rechazar H₀ cuando es falsa</strong>.</p>
+                
+                <div class="formula-box">
+                    \[\text{Potencia} = 1 - \beta = P(\text{Rechazar } H_0 \mid H_0 \text{ es falsa})\]
+                    <p style="margin-top: 10px;">Una potencia alta (cercana a 1) es deseable.</p>
+                </div>
+                
+                <h3>5. Estadísticos de Prueba Comunes</h3>
+                
+                <table>
+                    <tr>
+                        <th>Estadístico</th>
+                        <th>Cuándo Usar</th>
+                        <th>Distribución</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Z</strong></td>
+                        <td>σ conocida, n grande (n ≥ 30)</td>
+                        <td>Normal estándar</td>
+                    </tr>
+                    <tr>
+                        <td><strong>t</strong></td>
+                        <td>σ desconocida, cualquier n</td>
+                        <td>t-Student</td>
+                    </tr>
+                    <tr>
+                        <td><strong>χ²</strong></td>
+                        <td>Varianzas, bondad de ajuste</td>
+                        <td>Chi-cuadrado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>F</strong></td>
+                        <td>Comparación de varianzas</td>
+                        <td>F de Fisher</td>
+                    </tr>
+                </table>
+                
+                <h3>6. Región Crítica vs Valor p</h3>
+                
+                <div class="hypothesis-container">
+                    <div class="hypothesis-box">
+                        <h4 style="color: var(--bio-color);">Método de Región Crítica</h4>
+                        <p>Se determina un valor crítico y se compara con el estadístico calculado.</p>
+                        <div class="formula-box" style="margin-top: 10px;">
+                            Si \(|t_{calc}| > t_{crítico}\) → Rechazar H₀
+                        </div>
+                    </div>
+                    
+                    <div class="hypothesis-box">
+                        <h4 style="color: var(--accent-color);">Método de Valor p</h4>
+                        <p>Se calcula el valor p y se compara con α.</p>
+                        <div class="formula-box" style="margin-top: 10px;">
+                            Si \(p < \alpha\) → Rechazar H₀
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Interpretación del valor p:</h4>
+                    <ul style="padding-left: 20px;">
+                        <li><strong>p < 0.01:</strong> Evidencia muy fuerte contra H₀</li>
+                        <li><strong>0.01 ≤ p < 0.05:</strong> Evidencia fuerte contra H₀</li>
+                        <li><strong>0.05 ≤ p < 0.10:</strong> Evidencia débil contra H₀</li>
+                        <li><strong>p ≥ 0.10:</strong> Poca o ninguna evidencia contra H₀</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Una Población -->
+        <div id="una-poblacion" class="tab-content">
+            <div class="card">
+                <h2>📊 Pruebas para Una Población</h2>
+                
+                <h3>1. Prueba para la Media (σ conocida) - Prueba Z</h3>
+                
+                <div class="formula-box">
+                    <p><strong>Hipótesis:</strong></p>
+                    <ul style="padding-left: 20px; margin: 10px 0;">
+                        <li>\(H_0: \mu = \mu_0\)</li>
+                        <li>\(H_1: \mu \neq \mu_0\) (bilateral)</li>
+                        <li>\(H_1: \mu > \mu_0\) (unilateral derecha)</li>
+                        <li>\(H_1: \mu < \mu_0\) (unilateral izquierda)</li>
+                    </ul>
+                    
+                    <p><strong>Estadístico de prueba:</strong></p>
+                    \[Z = \frac{\bar{X} - \mu_0}{\sigma / \sqrt{n}}\]
+                    
+                    <p style="margin-top: 10px;"><strong>Distribución:</strong> \(Z \sim N(0,1)\)</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Ejemplo en Biotecnología:</h4>
+                    <p>Un laboratorio afirma que la concentración promedio de proteína en sus cultivos es de 8.5 mg/mL. Se toma una muestra de 40 cultivos y se obtiene \(\bar{x} = 8.2\) mg/mL. La desviación estándar poblacional es conocida: σ = 0.6 mg/mL. ¿Hay evidencia para rechazar la afirmación del laboratorio a α = 0.05?</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Solución:</strong></p>
+                    <ol style="padding-left: 20px;">
+                        <li>\(H_0: \mu = 8.5\) vs \(H_1: \mu \neq 8.5\)</li>
+                        <li>α = 0.05 (bilateral)</li>
+                        <li>\(Z = \frac{8.2 - 8.5}{0.6/\sqrt{40}} = \frac{-0.3}{0.0949} = -3.16\)</li>
+                        <li>Valor crítico: \(Z_{0.025} = \pm 1.96\)</li>
+                        <li>Como \(|-3.16| > 1.96\), rechazamos H₀</li>
+                        <li><strong>Conclusión:</strong> Hay evidencia estadística significativa de que la concentración promedio NO es 8.5 mg/mL.</li>
+                    </ol>
+                </div>
+                
+                <h3>2. Prueba para la Media (σ desconocida) - Prueba t</h3>
+                
+                <div class="formula-box">
+                    <p><strong>Estadístico de prueba:</strong></p>
+                    \[t = \frac{\bar{X} - \mu_0}{s / \sqrt{n}}\]
+                    
+                    <p style="margin-top: 10px;"><strong>Distribución:</strong> \(t \sim t_{n-1}\)</p>
+                    <p style="margin-top: 5px;"><strong>Grados de libertad:</strong> \(gl = n - 1\)</p>
+                </div>
+                
+                <h3>3. Prueba para una Proporción</h3>
+                
+                <div class="formula-box">
+                    <p><strong>Hipótesis:</strong></p>
+                    \[H_0: p = p_0 \quad \text{vs} \quad H_1: p \neq p_0\]
+                    
+                    <p><strong>Estadístico de prueba:</strong></p>
+                    \[Z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}\]
+                    
+                    <p style="margin-top: 10px;"><strong>Requisito:</strong> \(np_0 \geq 5\) y \(n(1-p_0) \geq 5\)</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Ejemplo:</h4>
+                    <p>En un estudio de viabilidad celular, se afirma que el 85% de las células sobreviven al proceso de criopreservación. En una muestra de 200 células, se observa que 160 sobreviven. ¿Hay evidencia para dudar de la afirmación a α = 0.05?</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Solución:</strong></p>
+                    <ol style="padding-left: 20px;">
+                        <li>\(\hat{p} = 160/200 = 0.80\)</li>
+                        <li>\(H_0: p = 0.85\) vs \(H_1: p \neq 0.85\)</li>
+                        <li>\(Z = \frac{0.80 - 0.85}{\sqrt{0.85 \times 0.15 / 200}} = -1.98\)</li>
+                        <li>\(Z_{0.025} = \pm 1.96\)</li>
+                        <li>Como \(|-1.98| > 1.96\), rechazamos H₀</li>
+                        <li><strong>Conclusión:</strong> Hay evidencia de que la proporción de supervivencia es diferente de 85%.</li>
+                    </ol>
+                </div>
+                
+                <h3>4. Prueba para la Varianza</h3>
+                
+                <div class="formula-box">
+                    <p><strong>Hipótesis:</strong></p>
+                    \[H_0: \sigma^2 = \sigma_0^2 \quad \text{vs} \quad H_1: \sigma^2 \neq \sigma_0^2\]
+                    
+                    <p><strong>Estadístico de prueba:</strong></p>
+                    \[\chi^2 = \frac{(n-1)s^2}{\sigma_0^2}\]
+                    
+                    <p style="margin-top: 10px;"><strong>Distribución:</strong> \(\chi^2 \sim \chi^2_{n-1}\)</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Dos Poblaciones -->
+        <div id="dos-poblaciones" class="tab-content">
+            <!-- Contenido cargado por JavaScript -->
+        </div>
+        
+        <!-- Tab: Calculadora -->
+        <div id="calculadora" class="tab-content">
+            <!-- Contenido cargado por JavaScript -->
+        </div>
+        
+        <!-- Tab: Ejemplos Bio -->
+        <div id="ejemplos-bio" class="tab-content">
+            <!-- Contenido cargado por JavaScript -->
+        </div>
+        
+        <!-- Tab: Código R -->
+        <div id="codigo-r" class="tab-content">
+            <!-- Contenido cargado por JavaScript -->
+        </div>
+        
+        <!-- Tab: Código Python -->
+        <div id="codigo-python" class="tab-content">
+            <!-- Contenido cargado por JavaScript -->
+        </div>
+        
+    </div>
+    
+    <script src="pruebas_hipotesis_contenido.js"></script>
+    <script src="pruebas_hipotesis_calculadora.js"></script>
+</body>
+</html>
+
